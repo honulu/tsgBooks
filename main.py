@@ -30,23 +30,18 @@ def analyWeb(r, test):
         bookWebsite = re.sub(r"\D", "", i.p.span["id"])
         # book's publisher
         bookPublisher = re.sub(r"\s", "", i.p.get_text())
-        books = bookName + bookPublisher + bookWebsite
+        books = bookName +"--" +bookPublisher +"--" + bookWebsite
         print(books)
         test += 1
         print("***********", test)
     return test
-def SaveToSql():
+# Save the date to sql
+def SaveToSql(dates):
     conn = sqlite3.connect("tsgBooks.db")
     c = conn.cursor()
-    c.executemany('''INSERT INTO stocks
-                    (bookName, bookWebsite, bookPublisher)''')
+    c.executemany("INSERT INTO boooks VALUES(?,?,?)", dates)
     conn.commit()
     conn.close()
-def NewDb():
-    conn = sqlite3.connect("tsgBooks.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE
-                (bookName, bookWebsite, bookPublisher)''')
 # Get the pages of books
 def fUrls(url):
     orign = url
@@ -57,19 +52,32 @@ def fUrls(url):
     for i in k:
         n += 1
     return n
-
-
+def baseSql(command):
+    conn = sqlite3.connect("tsgBooks.db")
+    c = conn.cursor()
+    c.execute(command)
+    print(c.fetchall())
+    conn.commit()
+    conn.close()
+SHOW = 'SELECT * FROM boooks'
+# Create new db to storge datas
+NEWDB = '''CREATE TABLE boooks (bookName, bookWebsite, bookPublisher)'''
+SHOWTABLES = "SELECT name FROM sqlite_master WHERE type='table';"
 def main():
-    url = "http://172.16.47.83/newbook/newbook_cls_book.php?back_days=15&loca_code=ALL&cls=TP&s_doctype=ALL&clsname=自动化技术、计算机技术"
-    n = fUrls(url)
-    print("all numbers:", n)
-    test = 0
-    for i in range(1, n+1):
-        urls = url + "&page="+ str(i)
-        print("NEXT WE WILL %s", urls)
-        r = getSour(urls)
-        test = analyWeb(r, test)
-    print("all books are", test)
-
+    # url = "http://172.16.47.83/newbook/newbook_cls_book.php?back_days=15&loca_code=ALL&cls=TP&s_doctype=ALL&clsname=自动化技术、计算机技术"
+    # n = fUrls(url)
+    # print("all numbers:", n)
+    # test = 0
+    # for i in range(1, n+1):
+    #     urls = url + "&page="+ str(i)
+    #     print("NEXT WE WILL %s", urls)
+    #     r = getSour(urls)
+    #     test = analyWeb(r, test)
+    # print("all books are", test)
+    # NewDb()
+    # t = [('testnaw', 'testwebsite', 'testpubilsh')]
+    # SaveToSql(t)
+    # Show()
+    baseSql(SHOW)
 
 main()
