@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 from html.parser import HTMLParser
 import re
 class qdtsg:
-    def __init__(self, time, typei):
+    def __init__(self, time="15", typei="TP"):
         self.__url = "http://172.16.47.83/newbook/newbook_cls_book.php?s_doctype=ALL&loca_code=ALL&back_days="
         self.__time = time
         self.__type = typei
