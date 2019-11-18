@@ -5,6 +5,7 @@ import time
 from html import unescape
 import sqlite3
 
+
 # print iterations progress
 def ppBar(iteration, total, prefix= '', suffix = '', decimals = 3, length = 100, fill = '█', printEnd = "\r"):
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
@@ -37,15 +38,21 @@ def ShowData(fileName, tableName):
     conn = sqlite3.connect(fileName)
     c = conn.cursor()
     c.execute('SELECT * FROM {}'.format(tableName))
-    print(c.fetchall())
+    lc = c.fetchall()
+    for i in range(len(lc)):
+        time.sleep(0.2)
+        print("\033[32;1m" + lc[i][0]+ "\t\033[0m\033[37;1m"+ lc[i][2]+ "\t\033[0m\033[34;1m" +lc[i][3]+ "\033[0m")
+        # print(lc[i][0], lc[i][3], lc[i][2])
+    # print(type(c.fetchall()))
     conn.close()
 
 class qdtsg:
-    def __init__(self, time="15", typei="TP"):
+    def __init__(self, tableName, time="15", typei="TP"):
         self.__url = "http://172.16.47.83/newbook/newbook_cls_book.php?s_doctype=ALL&loca_code=ALL&back_days="
         self.__time = time
         self.__type = typei
-        CreateBook("tsg.db", "bookList")
+        self.__tableName = tableName
+        CreateBook("tsg.db", self.__tableName)
     def fnBook(self):
         # get the page number
         self.__url += (self.__time+"&cls="+self.__type+"&")
@@ -81,6 +88,7 @@ class qdtsg:
                 else:
                     self.__bPublish = unescape(re.findall("&#.*;", temp)[0])
                 
+                # print(self.__bName, self.__bNumber)
                 # save bookInformation to bookSqlList
                 bookSqlList[tempI][0] = str(self.__bName)
                 bookSqlList[tempI][1] = str(self.__bHref)
@@ -88,18 +96,23 @@ class qdtsg:
                 bookSqlList[tempI][3] = str(self.__bNumber)
                 tempI +=1
 
-            SaveDate(bookSqlList, "tsg.db", "bookList")
+            SaveDate(bookSqlList, "tsg.db", self.__tableName)
             ppBar(j, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = 50)
 def main():
-    time = str(input("Type your time: "))
-    Type = str(input("Type you book list: "))
-    if time == "":
-        time = "30"
+    tableName =str(time.strftime("%Y%m%d%H%M%S",time.localtime()))
+    print("\033[32;1mNow time is: \033[0m", tableName)
+    Time = str(input("\033[32;1mType your time: \033[0m"))
+    Type = str(input("\033[32;1mType you book list: \033[0m"))
+    if Time == "":
+        Time = "30"
     if Type == "":
         Type = "TP"
-    x = qdtsg(time, Type)
+    tableName = Type + tableName + Time
+    x = qdtsg(tableName, Time, Type)
     x.fnBook()
-# main()
-ShowData("tsg.db", "bookList")
+    ShowData("tsg.db", tableName)
+
+
+main()
 
 
