@@ -2,16 +2,18 @@ from requests import *
 from bs4 import BeautifulSoup as bs
 import re
 import time
-from html import unescape
 import sqlite3
+import math
+import os
 
 
 # print iterations progress
-def ppBar(iteration, total, prefix= '', suffix = '', decimals = 3, length = 100, fill = '█', printEnd = "\r"):
+def ppBar(iteration, total, prefix= '', suffix = '', decimals = 2, length = 100, fill = '█', printEnd = "\r"):
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s %s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    # print('\r%s %s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    print('\r%s%s%%' % (bar, percent), end = printEnd)
     # Print New Line on Complete
     if iteration == total: 
         print()
@@ -39,9 +41,10 @@ def ShowData(fileName, tableName):
     c = conn.cursor()
     c.execute('SELECT * FROM {}'.format(tableName))
     lc = c.fetchall()
+    os.system("clear")
     for i in range(len(lc)):
-        time.sleep(0.2)
-        print("\033[32;1m" + lc[i][0]+ "\t\033[0m\033[37;1m"+ lc[i][2]+ "\t\033[0m\033[34;1m" +lc[i][3]+ "\033[0m")
+        time.sleep(0.5)
+        print("\033[32;1m" + lc[i][0]+ " \033[0m\033[34;1m"+ lc[i][2]+ " \033[0m\033[36;1m" +lc[i][3]+ "\033[0m")
         # print(lc[i][0], lc[i][3], lc[i][2])
     # print(type(c.fetchall()))
     conn.close()
@@ -58,14 +61,29 @@ class qdtsg:
         self.__url += (self.__time+"&cls="+self.__type+"&")
         content = get(self.__url).text
         soup = bs(content, 'html.parser')
-        try:
-            bookPages = soup.find("font", attrs={"color":"black"}).string
-        except :
-            print("Now dont have new book")
+
+        # get the number of book
+        ## first get the part of book number
+        partOfBookCode = re.findall(r'<font color="red">\d+',content)
+        ## then search the number
+        numberOfBook = re.findall(r'\d+', partOfBookCode[0])[0]
+        
+        if numberOfBook == "0":
+            print("\033[31;1mNow don't have new book!\033[0m")
             return -1
+        else:
+            print("\033[1mGet the\033[0m\033[34;1m {0} \033[0m\033[1mbooks from \033[34;1m{1}\033[0m in \033[34;1m{2}\033[0m.\033[0m".format(numberOfBook, self.__type, self.__time))
+            if int(numberOfBook) <= 9:
+                bookPages = "1"
+            else:
+                # bookPages = soup.find("font", attrs={"color":"black"}).string
+                bookPages = str(math.ceil(int(numberOfBook)/9))
+
 
         # initial Bar
-        ppBar(0, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = 50)
+        ## get 
+        rows, columns = os.popen('stty size','r').read().split()
+        ppBar(0, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = int(columns)-7)
 
         # get every book's infornation on every page and print it
         for j in range(1, int(bookPages)+1):
@@ -82,13 +100,8 @@ class qdtsg:
                 self.__bHref = re.sub(r"\.{2}","http://172.16.47.83",i.a['href'])
                 tempText = i.h3.text
                 self.__bNumber = tempText.split()[-1]
-                temp = str(i.p.encode("ascii"))
-                if "(" in temp:
-                    self.__bPublish = unescape(re.findall("\(.*;", temp)[0])
-                else:
-                    self.__bPublish = unescape(re.findall("&#.*;", temp)[0])
-                
-                # print(self.__bName, self.__bNumber)
+                for tempSoupi in i.p.stripped_strings:
+                    self.__bPublish = tempSoupi
                 # save bookInformation to bookSqlList
                 bookSqlList[tempI][0] = str(self.__bName)
                 bookSqlList[tempI][1] = str(self.__bHref)
@@ -97,12 +110,12 @@ class qdtsg:
                 tempI +=1
 
             SaveDate(bookSqlList, "tsg.db", self.__tableName)
-            ppBar(j, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = 50)
+            ppBar(j, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = int(columns)-7)
 def main():
     tableName =str(time.strftime("%Y%m%d%H%M%S",time.localtime()))
-    print("\033[32;1mNow time is: \033[0m", tableName)
-    Time = str(input("\033[32;1mType your time: \033[0m"))
-    Type = str(input("\033[32;1mType you book list: \033[0m"))
+    print("\033[1mNow time is: \033[0m\033[36;1m%s\033[0m" %(tableName))
+    Time = str(input("\033[1mType your time: \033[0m"))
+    Type = str(input("\033[1mType you book list: \033[0m"))
     if Time == "":
         Time = "30"
     if Type == "":
