@@ -43,9 +43,7 @@ def ShowData(fileName, tableName):
     lc = c.fetchall()
     for i in range(len(lc)):
         time.sleep(0.5)
-        # print("\033[32;m"++".\033[0m\033[32;m" + lc[i][0]+ " \033[0m\033[34;m"+ lc[i][2]+ " \033[0m\033[36;m" +lc[i][3]+ "\033[0m")
-        print("\033[32m{0}.\033[0m\033[32m{1} \033[0m\033[34m{2} \033[0m\033[36m{3} \033[0m".format(str(i+1), lc[i][0], lc[i][2], lc[i][3]))
-        
+        print("\033[32;1m"+str(i+1)+".\033[0m\033[32;1m" + lc[i][0]+ " \033[0m\033[34;1m"+ lc[i][2]+ " \033[0m\033[36;1m" +lc[i][3]+ "\033[0m")
         # print(lc[i][0], lc[i][3], lc[i][2])
     # print(type(c.fetchall()))
     conn.close()
@@ -73,7 +71,7 @@ class qdtsg:
             print("\033[31;1mNow don't have new book!\033[0m")
             return -1
         else:
-            print("\033[mGet the\033[0m\033[34;1m {0} \033[0m\033[mbooks from \033[34;1m{1}\033[0m in \033[34;1m{2}\033[0m.\033[0m".format(numberOfBook, self.__type, self.__time))
+            print("\033[1mGet the\033[0m\033[34;1m {0} \033[0m\033[1mbooks from \033[34;1m{1}\033[0m in \033[34;1m{2}\033[0m.\033[0m".format(numberOfBook, self.__type, self.__time))
             if int(numberOfBook) <= 9:
                 bookPages = "1"
             else:
@@ -115,9 +113,9 @@ class qdtsg:
 def main():
     os.system("clear")
     tableName =str(time.strftime("%Y%m%d%H%M%S",time.localtime()))
-    print("\033[mNow time is: \033[0m\033[36;1m%s\033[0m" %(tableName))
-    Time = str(input("\033[mType your time: \033[0m"))
-    Type = str(input("\033[mType you book list: \033[0m"))
+    print("\033[1mNow time is: \033[0m\033[36;1m%s\033[0m" %(tableName))
+    Time = str(input("\033[1mType your time: \033[0m"))
+    Type = str(input("\033[1mType you book list: \033[0m"))
     if Time == "":
         Time = "30"
     if Type == "":
