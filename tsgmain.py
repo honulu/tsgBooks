@@ -41,10 +41,9 @@ def ShowData(fileName, tableName):
     c = conn.cursor()
     c.execute('SELECT * FROM {}'.format(tableName))
     lc = c.fetchall()
-    os.system("clear")
     for i in range(len(lc)):
         time.sleep(0.5)
-        print("\033[32;1m" + lc[i][0]+ " \033[0m\033[34;1m"+ lc[i][2]+ " \033[0m\033[36;1m" +lc[i][3]+ "\033[0m")
+        print("\033[32;1m"+str(i+1)+".\033[0m\033[32;1m" + lc[i][0]+ " \033[0m\033[34;1m"+ lc[i][2]+ " \033[0m\033[36;1m" +lc[i][3]+ "\033[0m")
         # print(lc[i][0], lc[i][3], lc[i][2])
     # print(type(c.fetchall()))
     conn.close()
@@ -112,6 +111,7 @@ class qdtsg:
             SaveDate(bookSqlList, "tsg.db", self.__tableName)
             ppBar(j, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = int(columns)-7)
 def main():
+    os.system("clear")
     tableName =str(time.strftime("%Y%m%d%H%M%S",time.localtime()))
     print("\033[1mNow time is: \033[0m\033[36;1m%s\033[0m" %(tableName))
     Time = str(input("\033[1mType your time: \033[0m"))
