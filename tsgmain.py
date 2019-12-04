@@ -21,7 +21,7 @@ def ppBar(iteration, total, prefix= '', suffix = '', decimals = 2, length = 100,
 
 # Create a sqlite database
 def CreateBook(fileName, tableName):
-    conn = sqlite3.connect(fileName)
+    conn = sqlite3.connect(dbPath)
     c = conn.cursor()
     c.execute('CREATE TABLE IF NOT EXISTS {} (bookName, bookHref, bookPublish, bookNumber)'.format(tableName))
     conn.commit()
@@ -29,7 +29,7 @@ def CreateBook(fileName, tableName):
 
 # Save tsgBook data
 def SaveDate(data, fileName, tableName):
-    conn = sqlite3.connect(fileName)
+    conn = sqlite3.connect(dbPath)
     c = conn.cursor()
     c.executemany("INSERT INTO {} VALUES (?,?,?,?)".format(tableName), data)
     conn.commit()
@@ -37,7 +37,7 @@ def SaveDate(data, fileName, tableName):
 
 #  show tsgBook data
 def ShowData(fileName, tableName):
-    conn = sqlite3.connect(fileName)
+    conn = sqlite3.connect(dbPath)
     c = conn.cursor()
     c.execute('SELECT * FROM {}'.format(tableName))
     lc = c.fetchall()
@@ -55,6 +55,7 @@ class qdtsg:
         self.__type = typei
         self.__tableName = tableName
         CreateBook("tsg.db", self.__tableName)
+        
     def fnBook(self):
         # get the page number
         self.__url += (self.__time+"&cls="+self.__type+"&")
@@ -71,7 +72,7 @@ class qdtsg:
             print("\033[31;1mNow don't have new book!\033[0m")
             return -1
         else:
-            print("\033[1mGet the\033[0m\033[34;1m {0} \033[0m\033[1mbooks from \033[34;1m{1}\033[0m in \033[34;1m{2}\033[0m.\033[0m".format(numberOfBook, self.__type, self.__time))
+            print("\033[1mGet the\033[0m\033[34;1m {0} \033[0m\033[1mbooks from \033[34;1m{1}\033[0m in \033[34;1m{2} \033[0m.\033[0mdays".format(numberOfBook, self.__type, self.__time))
             if int(numberOfBook) <= 9:
                 bookPages = "1"
             else:
@@ -110,6 +111,10 @@ class qdtsg:
 
             SaveDate(bookSqlList, "tsg.db", self.__tableName)
             ppBar(j, int(bookPages), prefix = 'Progress:', suffix = 'Complete', length = int(columns)-7)
+
+# set the db file you stored
+dbPath="/home/nulu/Documents/tsg.db"
+
 def main():
     os.system("clear")
     tableName =str(time.strftime("%Y%m%d%H%M%S",time.localtime()))
@@ -124,7 +129,6 @@ def main():
     x = qdtsg(tableName, Time, Type)
     x.fnBook()
     ShowData("tsg.db", tableName)
-
 
 main()
 

@@ -1,7 +1,7 @@
 # :books:命令行模式下的新书查询
 
 - 使用`requests`,`beautifulsoup4`,`re`,`html.parser`库编写的命令行模式下查询学校图书馆新进了什么书
-- 在wsl及linux下可正常食用.
+- 在wsl+terminal以及linux下可正常食用.
 
 ## :fork_and_knife:如何食用
 
@@ -28,9 +28,7 @@
 
 - [ ] 新书提醒
 
-- [ ] 存储数据
-
-  - [x] Sqlite
+- [x] 存储数据
   
   
 
