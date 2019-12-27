@@ -98,8 +98,11 @@ class qdtsg:
             for i in bookList:
                 self.__bName = i.a.string
                 self.__bHref = re.sub(r"\.{2}","http://172.16.47.83",i.a['href'])
-                tempText = i.h3.text
-                self.__bNumber = tempText.split()[-1]
+                
+                i.h3.strong.replace_with("")
+                for ww in i.h3.stripped_strings:
+                        self.__bNumber = ww
+
                 for tempSoupi in i.p.stripped_strings:
                     self.__bPublish = tempSoupi
                 # save bookInformation to bookSqlList
